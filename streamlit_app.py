@@ -1,40 +1,32 @@
-import altair as alt
-import numpy as np
-import pandas as pd
-import streamlit as st
+import matplotlib.pyplot as plt
 
-"""
-# Welcome to Streamlit!
+# Define the assets in the portfolio with their returns and weights
+assets = {
+    'Stocks': {'return': 0.10, 'weight': 0.60},  # 10% return, 60% of the portfolio
+    'Bonds': {'return': 0.05, 'weight': 0.30},   # 5% return, 30% of the portfolio
+    'Cash': {'return': 0.02, 'weight': 0.10}     # 2% return, 10% of the portfolio
+}
 
-Edit `/streamlit_app.py` to customize this app to your heart's desire :heart:.
-If you have any questions, checkout our [documentation](https://docs.streamlit.io) and [community
-forums](https://discuss.streamlit.io).
+# Calculate the weighted return of the portfolio
+portfolio_return = sum(asset['return'] * asset['weight'] for asset in assets.values())
 
-In the meantime, below is an example of what you can do with just a few lines of code:
-"""
+# Labels for the sectors
+labels = assets.keys()
 
-num_points = st.slider("Number of points in spiral", 1, 10000, 1100)
-num_turns = st.slider("Number of turns in spiral", 1, 300, 31)
+# Sizes for each slice
+sizes = [asset['weight'] for asset in assets.values()]
 
-indices = np.linspace(0, 1, num_points)
-theta = 2 * np.pi * num_turns * indices
-radius = indices
+# Colors for each sector
+colors = ['gold', 'lightblue', 'lightgreen']
 
-x = radius * np.cos(theta)
-y = radius * np.sin(theta)
+# Exploding the 1st slice (stocks)
+explode = (0.1, 0, 0)
 
-df = pd.DataFrame({
-    "x": x,
-    "y": y,
-    "idx": indices,
-    "rand": np.random.randn(num_points),
-})
+# Plotting the Pie chart
+fig1, ax1 = plt.subplots()
+ax1.pie(sizes, explode=explode, labels=labels, autopct='%1.1f%%', shadow=True, startangle=90, colors=colors)
+ax1.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
 
-st.altair_chart(alt.Chart(df, height=700, width=700)
-    .mark_point(filled=True)
-    .encode(
-        x=alt.X("x", axis=None),
-        y=alt.Y("y", axis=None),
-        color=alt.Color("idx", legend=None, scale=alt.Scale()),
-        size=alt.Size("rand", legend=None, scale=alt.Scale(range=[1, 150])),
-    ))
+# Display the total portfolio return and show the pie chart
+print(f"Total Portfolio Return: {portfolio_return:.2%}")
+plt.show()
